@@ -1,1 +1,32 @@
-{"orders": []}
+{
+    "orders": [
+        {
+            "item": "Mouse",
+            "quantity": "5",
+            "price": "1500",
+            "buyer": "Alex Byuer",
+            "date": "23.02.2021"
+        },
+        {
+            "item": "Notebook",
+            "quantity": "1",
+            "price": "15000",
+            "buyer": "Mr. Black",
+            "date": "03.02.2021"
+        },
+        {
+            "item": "Lamp",
+            "quantity": "10",
+            "price": "10",
+            "buyer": "Bob Charley",
+            "date": "20.01.2021"
+        },
+        {
+            "item": "Red Rose",
+            "quantity": "500",
+            "price": "35",
+            "buyer": "Angelica Smith",
+            "date": "11.01.2021"
+        }
+    ]
+}
