@@ -1,38 +1,35 @@
+import json
 from socket import *
 from contextlib import closing
-import sys
+from time import time
+from utils.errors import errors
+from utils.settings import encoding
+from utils.utility import get_args, sock_event
 
 
-import argparse
-parser = argparse.ArgumentParser()
-parser.add_argument('-p', '--port', help='This parameter sets the port')
-parser.add_argument('-a', '--addr', nargs='?', help='This parameter specifies the IP address to listen to')
-port = parser.parse_args().port
-addr = parser.parse_args().addr
-if not port:
-    print("Не указан порт")
-    sys.exit()
-if not addr:
-    addr = ""
+addr, port = get_args()
 
 with socket(AF_INET, SOCK_STREAM) as sock:
-    try:
-        sock.bind((addr, int(port)))
-    except ValueError:
-        print("Не правильно указан порт")
-        sys.exit()
-    except gaierror:
-        print("Не правильно указан адрес")
-        sys.exit()
-    except PermissionError:
-        print("Ошибка доступа к порту. Порт уже занят, либо у вас недостаточно прав на его использование")
-        sys.exit()
-
+    sock_event(sock.bind((addr, port)))
     sock.listen()
     while True:
         client, addr = sock.accept()
         with closing(client) as cl:
-            data = cl.recv(1000000)
-            print("Message: ", data.decode("ascii"), ", sent from client", addr)
-            message = "Accepted"
-            cl.send(message.encode("ascii"))
+            while True:
+                data = cl.recv(1048576)
+                client_message = json.loads(data.decode(encoding))
+                try:
+                    if client_message['action'] == "authenticate":
+                        print(": ", client_message, ", sent from client", addr)
+                        auth = {
+                            "status": "Accepted",
+                            "message": f"Hello {client_message['user']['username']}"
+                        }
+                        message = json.dumps(auth)
+                        cl.send(message.encode(encoding))
+                    if client_message['action'] == "message":
+                        print(client_message, ", sent from client", addr)
+                        if client_message["message"] == "quit":
+                            break
+                except KeyError:
+                    print("Wrong action")
