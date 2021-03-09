@@ -1,7 +1,5 @@
 import sys
-
-from client.connect import connect
-from utils.message import send_message, recv_message
+from utils.utility import send_message, recv_message, connect
 
 
 def main():
@@ -9,7 +7,7 @@ def main():
     while status:
         user_input = input('Ваше сообщение: ')
         send_message(status, 2, user_input)
-        print(recv_message(status.recv(1048576)))
+        print(recv_message(status))
 
 
 if __name__ == "__main__":

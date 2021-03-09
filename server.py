@@ -2,9 +2,8 @@ import json
 from socket import *
 from contextlib import closing
 
-from utils.message import send_message
 from utils.settings import encoding
-from utils.utility import get_args, sock_event
+from utils.utility import get_args, sock_event, send_message
 
 addr, port = get_args()
 
