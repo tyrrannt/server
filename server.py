@@ -1,11 +1,10 @@
 import json
 from socket import *
 from contextlib import closing
-from time import time
-from utils.errors import errors
+
+from utils.message import send_message
 from utils.settings import encoding
 from utils.utility import get_args, sock_event
-
 
 addr, port = get_args()
 
@@ -21,15 +20,13 @@ with socket(AF_INET, SOCK_STREAM) as sock:
                 try:
                     if client_message['action'] == "authenticate":
                         print(": ", client_message, ", sent from client", addr)
-                        auth = {
-                            "status": "Accepted",
-                            "message": f"Hello {client_message['user']['username']}"
-                        }
-                        message = json.dumps(auth)
-                        cl.send(message.encode(encoding))
+
+                        send_message(cl, 4, "Hello!")
+
                     if client_message['action'] == "message":
                         print(client_message, ", sent from client", addr)
                         if client_message["message"] == "quit":
                             break
+                        send_message(cl, 5, client_message["message"])
                 except KeyError:
                     print("Wrong action")

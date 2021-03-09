@@ -1,29 +1,14 @@
-
-import json
 from socket import *
 
-
+from utils.message import send_message, recv_message
 from utils.settings import *
 from utils.errors import errors
-from utils.utility import get_args, sock_event, serialize_json, deserialize_json
+from utils.utility import get_args, sock_event
 
 
 def disconnect(sock):
     sock.close()
     errors(0)
-
-
-def send_message(sock, flag, text=""):
-    msg = serialize_json(flag, text)
-    sock_event(sock.send(msg))
-    if text == "quit":
-        disconnect(sock)
-
-
-def recv_message(sock):
-    data = sock.recv(1048576)
-    message = deserialize_json(data)
-    return message
 
 
 def connect(args):

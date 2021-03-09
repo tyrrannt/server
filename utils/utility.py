@@ -3,7 +3,6 @@ import getpass
 import ipaddress
 from socket import *
 import json
-from time import time
 
 from utils.errors import errors
 from utils.settings import message_flag, encoding
