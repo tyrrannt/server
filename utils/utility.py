@@ -35,8 +35,7 @@ def send_message(sock, flag, text=""):
 
 def recv_message(sock):
     data = sock.recv(1048576)
-    message = deserialize_json(data)
-    return message
+    return deserialize_json(data)
 
 
 def serialize_json(flag, text):
@@ -53,8 +52,7 @@ def serialize_json(flag, text):
 
 
 def deserialize_json(data):
-    message = json.loads(data.decode(encoding))
-    return message
+    return json.loads(data.decode(encoding))
 
 
 def get_args():
