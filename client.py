@@ -7,7 +7,6 @@ def main():
     while status:
         user_input = input('Ваше сообщение: ')
         send_message(status, 2, user_input)
-        print(recv_message(status))
 
 
 if __name__ == "__main__":

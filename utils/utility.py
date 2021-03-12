@@ -5,11 +5,16 @@ from socket import *
 import json
 from utils.errors import errors
 from utils.settings import message_flag, encoding
+from log import client_log_config, server_log_config
+
+logger = client_log_config.logger
 
 
 def disconnect(sock):
     sock.close()
+    logger.info('Завершение работы клиента.')
     errors(0)
+
 
 
 def connect(args):
@@ -19,9 +24,11 @@ def connect(args):
     send_message(sock, 0)
     server_message = recv_message(sock)
     if server_message['action'] == message_flag[4]:
+        logger.info('Клиент успешно подключился к серверу.')
         print(f"{server_message['message']}")
         return sock
     else:
+        logger.warning('Ошибка установки соединения.')
         errors(7)
 
 
@@ -74,6 +81,7 @@ def get_args():
         else:
             port = int(parser.parse_args().port)
     except ValueError:
+        logger.warning('Не правильно указан порт.')
         errors(1)
     try:
         addr = parser.parse_args().addr
@@ -81,6 +89,7 @@ def get_args():
             addr = "127.0.0.1"
         ipaddress.ip_address(addr)
     except ValueError:
+        logger.warning('Не правильно указан адрес.')
         errors(2)
     return addr, port
 
@@ -89,16 +98,22 @@ def sock_event(func):
     try:
         func
     except ValueError:
+        logger.warning('Не правильно указан порт.')
         errors(1)
     except gaierror:
+        logger.warning('Не правильно указан адрес.')
         errors(2)
     except PermissionError:
+        logger.warning('Ошибка доступа к порту. Порт уже занят, либо у вас недостаточно прав на его использование.')
         errors(3)
     except ConnectionRefusedError:
+        logger.warning('Сервер не отвечает.')
         errors(4)
     except ConnectionResetError:
+        logger.critical('Сервер принудительно разорвал соединение.')
         errors(5)
     except ConnectionAbortedError:
+        logger.critical('Сервер разорвал установленное подключение.')
         errors(6)
 
 
