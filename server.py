@@ -20,7 +20,7 @@ with socket(AF_INET, SOCK_STREAM) as sock:
                 client_message = json.loads(data.decode(encoding))
                 try:
                     if client_message['action'] == "authenticate":
-                        msg = client_message + ", sent from client " + addr
+                        msg = str(client_message) + ", sent from client " + str(addr)
                         server_logger.info(msg)
                         send_message(cl, 4, "Hello!")
 
