@@ -1,23 +1,38 @@
 import argparse
 import getpass
 import ipaddress
+import time
 from socket import *
 import json
 from utils.errors import errors
 from utils.settings import message_flag, encoding
 from log import client_log_config, server_log_config
+import inspect
+import traceback
 
 client_logger = client_log_config.logger
 server_logger = server_log_config.logger
 
 
+def log(func):
+    def decorated(*args, **kwargs):
+        res = func(*args, **kwargs)
+        stack = inspect.stack()
+        client_logger.info(
+            f'<{time.ctime(time.time())}> Функция {func.__name__} вызвана из функции {stack[1].function}')
+        return res
+
+    return decorated
+
+
+@log
 def disconnect(sock):
     sock.close()
     client_logger.info('Завершение работы клиента.')
     errors(0)
 
 
-
+@log
 def connect(args):
     addr, port = get_args()
     sock = socket(AF_INET, SOCK_STREAM)
@@ -37,6 +52,7 @@ def connect(args):
         errors(7)
 
 
+@log
 def send_message(sock, flag, text=""):
     msg = serialize_json(flag, text)
     try:
@@ -48,12 +64,13 @@ def send_message(sock, flag, text=""):
         disconnect(sock)
 
 
-
+@log
 def recv_message(sock):
     data = sock.recv(1048576)
     return deserialize_json(data)
 
 
+@log
 def serialize_json(flag, text):
     message = {
         "action": message_flag[int(flag)],
@@ -67,10 +84,12 @@ def serialize_json(flag, text):
     return result.encode(encoding)
 
 
+@log
 def deserialize_json(data):
     return json.loads(data.decode(encoding))
 
 
+@log
 def get_args():
     """
     Функция разбирать аргументы, передаваемые скрипту при его запуске из командной строки. Ищет в переданных аргументах
@@ -103,6 +122,7 @@ def get_args():
     return addr, port
 
 
+@log
 def sock_event(func):
     try:
         func
@@ -113,7 +133,8 @@ def sock_event(func):
         client_logger.info('Не правильно указан адрес.')
         errors(2)
     except PermissionError:
-        client_logger.warning('Ошибка доступа к порту. Порт уже занят, либо у вас недостаточно прав на его использование.')
+        client_logger.warning(
+            'Ошибка доступа к порту. Порт уже занят, либо у вас недостаточно прав на его использование.')
         errors(3)
     except ConnectionRefusedError:
         client_logger.info('Сервер не отвечает.')

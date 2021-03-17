@@ -1,6 +1,5 @@
 import logging
 
-
 logger = logging.getLogger("server")
 formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s ")
 fh = logging.FileHandler("server.log", encoding='utf-8')
